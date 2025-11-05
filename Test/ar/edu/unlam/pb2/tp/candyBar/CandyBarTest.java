@@ -44,6 +44,7 @@ public class CandyBarTest {
     public void alAgregarProductosDuplicadosLanzaUnaProductoDuplicadoExeptionTest() throws ProductoDuplicadoException {
     	candyBar.agregarProducto(palomitas);
     	candyBar.agregarProducto(palomitas);
+    	
     }
     
 
@@ -104,11 +105,17 @@ public class CandyBarTest {
     	 assertEquals(4, candyBar.obtenerInventario().size()); 
 
     	List<Bebida> bebidasOrdenadas = new ArrayList<Bebida>(candyBar.obtenerBebidasOrdenadasPorPrecio());
+    	
+    	double precio1, precio2, precio3;
+    	
+    	precio1 = 1200.0;
+    	precio2 = 1500.0;
+    	precio3 = 1800.0;
 
     	assertEquals(3, bebidasOrdenadas.size());
-    	assertEquals("Manaos", bebidasOrdenadas.get(0).getNombre());
-    	assertEquals("Coca-Cola", bebidasOrdenadas.get(1).getNombre());
-    	assertEquals("Pepsi", bebidasOrdenadas.get(2).getNombre());
+    	assertEquals(precio1, bebidasOrdenadas.get(0).getPrecioBase(),0.01);
+    	assertEquals(precio2, bebidasOrdenadas.get(1).getPrecioBase(),0.01);
+    	assertEquals(precio3, bebidasOrdenadas.get(2).getPrecioBase(),0.01);
     }
     
 
