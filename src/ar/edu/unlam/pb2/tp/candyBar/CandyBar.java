@@ -5,13 +5,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class CandyBar {
-	private List<Producto> productos;
+	private Set<Producto> productos;
 	
 
 	public CandyBar() {
-		this.productos = new ArrayList<Producto>();
+		this.productos = new TreeSet<Producto>();
 	}
 
 
@@ -26,7 +28,7 @@ public class CandyBar {
 	private void validarProductoNoDuplicado(Producto nuevoProd) throws ProductoDuplicadoException {
 		for(Producto p: productos) {
 			if(p.getNombre().equals(nuevoProd.getNombre())) {
-				throw new ProductoDuplicadoException("El producto es nulo");
+				throw new ProductoDuplicadoException("El producto esta duplicado");
 			}
 		}
 		
@@ -42,8 +44,8 @@ public class CandyBar {
 	}
 
 
-	public List<Producto> obtenerInventario() {
-		List<Producto> inventario = new ArrayList<Producto>();
+	public Set<Producto> obtenerInventario() {
+		Set<Producto> inventario = new TreeSet<Producto>();
 		
 		inventario.addAll(productos);
 	
@@ -53,13 +55,13 @@ public class CandyBar {
 
 	public void eliminarProducto(Producto producto) throws ProductoNoEncontradoException {
 		validarProductoNoNulo(producto);
-		for(Producto p: productos) {
-			if(p.equals(producto)){
-				productos.remove(p);
-				return;
-			}
+			
+		if(existeProducto(producto)) {
+			productos.remove(producto);
+		}else {
+			throw new ProductoNoEncontradoException();
 		}
-		throw new ProductoNoEncontradoException();
+		
 	}
 	
 	public boolean existeProducto(Producto producto) {
@@ -67,15 +69,9 @@ public class CandyBar {
 	}
 
 
-	public List<Producto> obtenerInventarioOrdenadoPorStock() {
-		List<Producto> inventarioOrdenado = obtenerInventario();
-		Collections.sort(inventarioOrdenado);
-		return inventarioOrdenado;
-	}
-	
-
-	public List<Bebida> obtenerBebidasOrdenadasPorPrecio() {
-		List<Bebida> bebidas = new ArrayList<>();
+	public Set<Bebida> obtenerBebidasOrdenadasPorPrecio() {
+		
+		Set<Bebida> bebidas = new TreeSet<Bebida>(new ComparadorDeBebidasPorPrecioBase());
     
 		for (Producto p : productos) {
 			if (p instanceof Bebida pB) {
@@ -83,33 +79,18 @@ public class CandyBar {
 			}
 		}
     
-
-		Collections.sort(bebidas, new Comparator<Bebida>() {
-			@Override
-			public int compare(Bebida b1, Bebida b2) {
-				return Double.compare(b1.getPrecioBase(), b2.getPrecioBase());
-			}
-		});
-
 		return bebidas;
 	}
 	
 
-	public List<Snack> obtenerSnacksOrdenadosPorNombre() {
-		List<Snack> snacks = new ArrayList<>();
+	public Set<Snack> obtenerSnacksOrdenadosPorNombre() {
+		Set<Snack> snacks = new TreeSet<Snack>(new ComparadorDeSnackPorNombre());
 
 		for (Producto p : productos) {
 			if (p instanceof Snack pS) {
 				snacks.add(pS);
 			}
 		}
-
-       Collections.sort(snacks, new Comparator<Snack>() {
-    	   @Override
-    	   public int compare(Snack s1, Snack s2) {
-    		   return s1.getNombre().compareToIgnoreCase(s2.getNombre());
-    	   }
-       });
 
        return snacks;
 	}

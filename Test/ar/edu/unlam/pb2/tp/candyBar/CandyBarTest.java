@@ -4,6 +4,8 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -83,11 +85,11 @@ public class CandyBarTest {
     	candyBar.agregarProducto(refresco);
     	candyBar.agregarProducto(new Bebida("Manaos", 1600.0, Contenedor.BOTELLA, 12));
     	
-    	List <Producto> inventario = candyBar.obtenerInventarioOrdenadoPorStock();
-    	 assertEquals(3, candyBar.obtenerInventarioOrdenadoPorStock().size());  
-    	 assertEquals(12, candyBar.obtenerInventarioOrdenadoPorStock().get(0).getStock());  
-    	 assertEquals(15, candyBar.obtenerInventarioOrdenadoPorStock().get(1).getStock());  
-    	 assertEquals(20, candyBar.obtenerInventarioOrdenadoPorStock().get(2).getStock());  
+    	List<Producto> inventario = new ArrayList<Producto>(candyBar.obtenerInventario());
+    	 assertEquals(3, inventario.size());  
+    	 assertEquals(12, inventario.get(0).getStock());  
+    	 assertEquals(15, inventario.get(1).getStock());  
+    	 assertEquals(20, inventario.get(2).getStock());  
     	
     }
     
@@ -99,9 +101,9 @@ public class CandyBarTest {
     	candyBar.agregarProducto(new Bebida("Pepsi", 1800.0, Contenedor.BOTELLA, 12));
     	candyBar.agregarProducto(palomitas); 
     	
-    	 assertEquals(4, candyBar.obtenerInventarioOrdenadoPorStock().size()); 
+    	 assertEquals(4, candyBar.obtenerInventario().size()); 
 
-    	List<Bebida> bebidasOrdenadas = candyBar.obtenerBebidasOrdenadasPorPrecio();
+    	List<Bebida> bebidasOrdenadas = new ArrayList<Bebida>(candyBar.obtenerBebidasOrdenadasPorPrecio());
 
     	assertEquals(3, bebidasOrdenadas.size());
     	assertEquals("Manaos", bebidasOrdenadas.get(0).getNombre());
@@ -116,7 +118,7 @@ public class CandyBarTest {
     	candyBar.agregarProducto(new Snack("Nachos", 600.0, Tamano.GRANDE, 15));
     	candyBar.agregarProducto(new Snack("Chips", 400.0, Tamano.PEQUENO, 10));
 
-    	List<Snack> snacksOrdenados = candyBar.obtenerSnacksOrdenadosPorNombre();
+    	List<Snack> snacksOrdenados = new ArrayList<Snack>(candyBar.obtenerSnacksOrdenadosPorNombre());
 
     	assertEquals(3, snacksOrdenados.size());
     	assertEquals("Chips", snacksOrdenados.get(0).getNombre());
