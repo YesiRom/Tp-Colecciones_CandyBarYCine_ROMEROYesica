@@ -1,53 +1,62 @@
 package ar.edu.unlam.pb2.tp.cine;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 public class SalaCine {
-	private Asiento [][] butacas;
+	private Map<String, Asiento> butacas;
 	private Pelicula pelicula;
 
 	public SalaCine(int filas, int columnas) {
-		this.butacas = new Asiento[filas][columnas];
-		asignarAsientos(filas, columnas);
+		this.butacas = new TreeMap<String, Asiento>();
+		inicializarButacas(filas, columnas);
 	}
 	
-	// LOGICA DE BUTACAS (Asientos) --> inicializa los asientos, total de asientos y cuantos estan ocupados. libera un asiento.
-	private void asignarAsientos(int filas, int columnas) {
-		for(int i= 0; i < filas; i++) {
-			for(int j = 0; j < columnas; j++) {
-				this.butacas[i][j] = new Asiento();
-			}
-		}
-	}
 
-	public Asiento[][] getButacas() {
-		
-		return butacas;
-	}
-	
-	public int contarAsientosOcupados() {
-		int contador =0;
-		for(int i= 0; i< this.butacas.length ; i++) {
-			for(int j = 0; j< this.butacas[i].length; j++) {
-				if(butacas[i][j] != null && butacas[i][j].estaOcupado()) {
-					contador++;
-				}
-			}
-		}
-		
-		return contador;
-	}
+	 private void inicializarButacas(int filas, int columnas) {
+	        for (int i = 0; i < filas; i++) {
+	            char letraFila = (char) ('A' + i); 
+	            for (int numero = 1; numero <= columnas; numero++) {
+	                String clave = letraFila + String.valueOf(numero);
+	                butacas.put(clave, new Asiento());
+	            }
+	        }
+	    }
 
-	public int getTotalAsientos() {
-		
-		return butacas.length * butacas[0].length ;
-	}
 	
-	public boolean liberarAsiento(int fila, int columna) {
-		 if(existeButaca(fila, columna) && butacas[fila][columna].estaOcupado()) {
-			 butacas[fila][columna].liberarAsiento();
+
+	 public Map<String, Asiento> getButacas() {
+		 return new TreeMap<>(butacas); 
+	 }
+
+	
+
+	 public int contarAsientosOcupados() {
+		 int contador = 0;
+		 for (Asiento asiento : butacas.values()) {
+			 if (asiento != null && asiento.estaOcupado()) {
+				 contador++;
+			 }
+		 }
+		 return contador;
+	 }
+
+
+
+	 public int getTotalAsientos() {
+		 return butacas.size();
+	 }
+
+
+	 public boolean liberarAsiento(String clave) {
+		 Asiento asiento = butacas.get(clave);
+		 if (asiento != null && asiento.estaOcupado()) {
+			 asiento.liberarAsiento();;
 			 return true;
 		 }
-		return false;
-	}
+		 return false;
+	 }
+
 
  //LOGICA CON PELICULA --> proyecta una pelicula, devuelve con get pelicula acual y titulo
 	public void cambiarPelicula(Pelicula nuevaPelicula) {
@@ -62,51 +71,57 @@ public class SalaCine {
 		
 
 	//LOGICA para vender boletos
-	public boolean venderBoleto(int fila, int columna, Cliente cliente) {
-		if(existeButaca(fila, columna) && !butacas[fila][columna].estaOcupado() && edadMinimaValida(cliente)) {
-			butacas[fila][columna].ocuparAsiento(cliente);
+
+	public boolean venderBoleto(String clave, Cliente cliente) {
+		Asiento asiento = butacas.get(clave);
+		if (asiento != null && !asiento.estaOcupado() && edadMinimaValida(cliente)) {
+			asiento.ocuparAsiento(cliente);
 			return true;
 		}
-		
 		return false;
 	}
+
 
 	private boolean edadMinimaValida(Cliente cliente) {
 		return pelicula.getEdadMinima() < cliente.getEdad();
 	}
 
 			
-	private boolean existeButaca(int fila, int columna) {
-		return fila >= 0 && fila < butacas.length 
-		        && columna >= 0 && columna < butacas[0].length;
+
+	private boolean existeButaca(String clave) {
+		return butacas.containsKey(clave);
 	}
+
 
 	
 
+
 	public void reiniciarSala() {
-		for(int i= 0; i< this.butacas.length ; i++) {
-			for(int j = 0; j< this.butacas[i].length; j++) {
-				butacas[i][j] = null;
-				}
+		for (Asiento asiento : butacas.values()) {
+			if (asiento != null) {
+				asiento.liberarAsiento();
 			}
+		}
 		pelicula = null;
 	}
 
+
 	public String mostrarButacasDetalle() {
-		String detalle= "";
-		
-		for(int i= 0; i< butacas.length; i++) {
-			for(int j= 0; j< butacas[0].length; j++) {
-				if(butacas[i][j] != null && butacas[i][j].estaOcupado()) {
-					detalle += "\nCliente: " + butacas[i][j].getOcupante().getNombre() + "\n" +
-				"Asiento: Fila " + i + "- Columna: " + j + "\n" + 
-				"Pelicula: " + getPeliculaActual().getTitulo() + "\n" +
-				"______________________________________________________________________________________\n";
-				}
+		StringBuilder detalle = new StringBuilder();
+
+		for (Map.Entry<String, Asiento> entry : butacas.entrySet()) {
+			Asiento asiento = entry.getValue();
+			if (asiento != null && asiento.estaOcupado()) {
+				detalle.append("\nCliente: ").append(asiento.getOcupante().getNombre())
+                   .append("\nAsiento: ").append(entry.getKey())
+                   .append("\nPelicula: ").append(getPeliculaActual().getTitulo())
+                   .append("\n______________________________________________________________________________________\n");
 			}
 		}
-		return detalle;
+
+		return detalle.toString();
 	}
+
 
 
 
